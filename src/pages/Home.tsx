@@ -1,56 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { PhaseCard } from "@/components/PhaseCard";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, BookOpen, FileText, Star } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Search, BookOpen, FileText, Star, Brain, Cpu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { guides } from "@/data/guidesData";
 
-const pdg1Phases = [
-  {
-    title: "Definición del Problema",
-    description: "Identifica y delimita el problema de investigación de manera clara y precisa.",
-    phase: "PDG1 - Fase 1",
-    duration: "2-3 semanas",
-    url: "/pdg1/fase1",
-  },
-  {
-    title: "Marco Teórico",
-    description: "Fundamenta tu investigación con bases teóricas y estado del arte.",
-    phase: "PDG1 - Fase 2",
-    duration: "3-4 semanas",
-    url: "/pdg1/fase2",
-  },
-  {
-    title: "Diseño Metodológico",
-    description: "Define el enfoque, métodos y técnicas para tu investigación.",
-    phase: "PDG1 - Fase 3",
-    duration: "2-3 semanas",
-    url: "/pdg1/fase3",
-  },
-];
-
-const pdg2Phases = [
-  {
-    title: "Implementación",
-    description: "Ejecuta tu metodología y recopila datos de manera sistemática.",
-    phase: "PDG2 - Fase 4",
-    duration: "4-6 semanas",
-    url: "/pdg2/fase4",
-  },
-  {
-    title: "Análisis de Resultados",
-    description: "Analiza e interpreta los datos obtenidos en tu investigación.",
-    phase: "PDG2 - Fase 5",
-    duration: "3-4 semanas",
-    url: "/pdg2/fase5",
-  },
-  {
-    title: "Conclusiones y Recomendaciones",
-    description: "Sintetiza hallazgos y propone recomendaciones basadas en tu investigación.",
-    phase: "PDG2 - Fase 6",
-    duration: "2-3 semanas",
-    url: "/pdg2/fase6",
-  },
-];
+const getGuideIcon = (iconName: string) => {
+  switch (iconName) {
+    case "Brain":
+      return Brain;
+    case "Cpu":
+      return Cpu;
+    default:
+      return BookOpen;
+  }
+};
 
 const featuredResources = [
   { title: "Plantillas de Documentos", icon: FileText, url: "/resources" },
@@ -69,12 +33,12 @@ export default function Home() {
               Guía Metodológica de Proyecto de Grado
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Plataforma oficial para estudiantes de PDG1 y PDG2 de la Universidad Icesi. 
-              Encuentra toda la información metodológica, recursos y ejemplos en un solo lugar.
+              Plataforma oficial para estudiantes de la Universidad Icesi. 
+              Encuentra guías metodológicas especializadas según el tipo de proyecto: Inteligencia Artificial, IoT y más.
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" className="bg-primary hover:bg-primary-hover" asChild>
-                <Link to="/pdg1/fase1">Comenzar PDG1</Link>
+                <Link to={`/${guides[0]?.id}/${guides[0]?.phases[0]?.id}`}>Explorar Guías</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/resources">
@@ -104,35 +68,72 @@ export default function Home() {
         </Card>
       </section>
 
-      {/* PDG1 Phases */}
+      {/* Guides Overview */}
       <section className="container mx-auto px-6 py-16">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Proyecto de Grado I</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-2">Guías por Tipo de Proyecto</h2>
           <p className="text-muted-foreground">
-            Fases iniciales de definición, fundamentación teórica y diseño metodológico
+            Selecciona la guía que corresponda al enfoque de tu proyecto de grado
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pdg1Phases.map((phase) => (
-            <PhaseCard key={phase.title} {...phase} />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {guides.map((guide) => {
+            const GuideIcon = getGuideIcon(guide.icon);
+            return (
+              <Card key={guide.id} className="hover:shadow-lg transition-shadow border-border">
+                <CardHeader>
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-primary/10 rounded-lg">
+                      <GuideIcon className="h-8 w-8 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-2xl mb-2">{guide.name}</CardTitle>
+                      <CardDescription className="text-base">{guide.description}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{guide.phases.length} fases completas</span>
+                    </div>
+                    <Button className="w-full bg-primary hover:bg-primary-hover" asChild>
+                      <Link to={`/${guide.id}/${guide.phases[0].id}`}>
+                        Comenzar Guía
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
-      {/* PDG2 Phases */}
-      <section className="container mx-auto px-6 py-16 bg-muted/30">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Proyecto de Grado II</h2>
-          <p className="text-muted-foreground">
-            Fases de ejecución, análisis de resultados y conclusiones finales
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pdg2Phases.map((phase) => (
-            <PhaseCard key={phase.title} {...phase} />
-          ))}
-        </div>
-      </section>
+      {/* All Phases Preview */}
+      {guides.map((guide, guideIndex) => (
+        <section 
+          key={guide.id} 
+          className={`container mx-auto px-6 py-16 ${guideIndex % 2 === 1 ? 'bg-muted/30' : ''}`}
+        >
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-2">{guide.name}</h2>
+            <p className="text-muted-foreground">{guide.description}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {guide.phases.map((phase) => (
+              <PhaseCard
+                key={phase.id}
+                title={phase.title}
+                description={phase.description}
+                phase={`Fase ${guide.phases.indexOf(phase) + 1}`}
+                duration={phase.duration}
+                url={`/${guide.id}/${phase.id}`}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
 
       {/* Featured Resources */}
       <section className="container mx-auto px-6 py-16">

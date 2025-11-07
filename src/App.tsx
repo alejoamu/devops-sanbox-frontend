@@ -28,8 +28,7 @@ const App = () => (
               </header>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/pdg1/:phase" element={<PhaseDetail />} />
-                <Route path="/pdg2/:phase" element={<PhaseDetail />} />
+                <Route path="/:guideId/:phaseId" element={<PhaseDetail />} />
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/faq" element={<FAQ />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -3,105 +3,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Download, Play } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-
-const phaseData = {
-  fase1: {
-    title: "Fase 1: Definición del Problema",
-    description: "En esta fase aprenderás a identificar, delimitar y plantear un problema de investigación de manera clara y precisa.",
-    course: "PDG1",
-    objectives: [
-      "Identificar un problema relevante en tu área de estudio",
-      "Delimitar el alcance de la investigación",
-      "Formular preguntas de investigación",
-      "Definir objetivos generales y específicos",
-    ],
-    steps: [
-      {
-        title: "1. Identificación del Problema",
-        description: "Explora tu área de interés e identifica problemas o necesidades reales.",
-        resources: [
-          { type: "video", title: "Cómo identificar un problema de investigación", duration: "12:30" },
-          { type: "document", title: "Guía para la identificación de problemas.pdf" },
-        ],
-      },
-      {
-        title: "2. Delimitación del Alcance",
-        description: "Define claramente los límites de tu investigación (temporal, espacial, temático).",
-        resources: [
-          { type: "video", title: "Delimitación del alcance de investigación", duration: "08:45" },
-          { type: "document", title: "Ejemplo de delimitación.pdf" },
-        ],
-      },
-      {
-        title: "3. Formulación de Preguntas",
-        description: "Convierte tu problema en preguntas de investigación claras y respondibles.",
-        resources: [
-          { type: "video", title: "Técnicas de formulación de preguntas", duration: "10:20" },
-          { type: "document", title: "Plantilla de preguntas de investigación.docx" },
-        ],
-      },
-    ],
-    deliverables: [
-      "Documento de definición del problema (2-3 páginas)",
-      "Matriz de delimitación del alcance",
-      "Lista de preguntas de investigación",
-      "Objetivos general y específicos",
-    ],
-    nextPhase: "/pdg1/fase2",
-    prevPhase: "/",
-  },
-  fase2: {
-    title: "Fase 2: Marco Teórico",
-    description: "Fundamenta tu investigación con bases teóricas sólidas y un análisis del estado del arte.",
-    course: "PDG1",
-    objectives: [
-      "Revisar literatura relevante en tu área de estudio",
-      "Identificar teorías y conceptos clave",
-      "Analizar el estado del arte",
-      "Construir el marco teórico de tu investigación",
-    ],
-    steps: [
-      {
-        title: "1. Revisión Bibliográfica",
-        description: "Busca y selecciona fuentes académicas relevantes y confiables.",
-        resources: [
-          { type: "video", title: "Búsqueda efectiva en bases de datos", duration: "15:00" },
-          { type: "document", title: "Lista de bases de datos recomendadas.pdf" },
-        ],
-      },
-      {
-        title: "2. Análisis del Estado del Arte",
-        description: "Examina investigaciones previas relacionadas con tu tema.",
-        resources: [
-          { type: "video", title: "Cómo hacer un estado del arte", duration: "18:30" },
-          { type: "document", title: "Matriz de análisis bibliográfico.xlsx" },
-        ],
-      },
-    ],
-    deliverables: [
-      "Marco teórico completo (8-12 páginas)",
-      "Estado del arte documentado",
-      "Referencias bibliográficas en formato APA",
-    ],
-    nextPhase: "/pdg1/fase3",
-    prevPhase: "/pdg1/fase1",
-  },
-};
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { getPhaseByIds, getGuideById } from "@/data/guidesData";
 
 export default function PhaseDetail() {
-  const { phase } = useParams<{ phase: string }>();
-  const data = phaseData[phase as keyof typeof phaseData];
+  const { guideId, phaseId } = useParams<{ guideId: string; phaseId: string }>();
+  const navigate = useNavigate();
+  
+  const guide = getGuideById(guideId || "");
+  const phase = getPhaseByIds(guideId || "", phaseId || "");
 
-  if (!data) {
+  if (!guide || !phase) {
     return (
       <div className="container mx-auto px-6 py-16">
         <h1 className="text-2xl font-bold">Fase no encontrada</h1>
+        <Button className="mt-4" onClick={() => navigate("/")}>
+          Volver al inicio
+        </Button>
       </div>
     );
   }
 
-  const progress = 33;
+  const currentPhaseIndex = guide.phases.findIndex((p) => p.id === phaseId);
+  const prevPhase = currentPhaseIndex > 0 ? guide.phases[currentPhaseIndex - 1] : null;
+  const nextPhase = currentPhaseIndex < guide.phases.length - 1 ? guide.phases[currentPhaseIndex + 1] : null;
+
+  const progress = ((currentPhaseIndex + 1) / guide.phases.length) * 100;
 
   return (
     <div className="min-h-screen">
@@ -113,10 +40,10 @@ export default function PhaseDetail() {
             Volver al inicio
           </Link>
           <Badge variant="secondary" className="mb-4">
-            {data.course}
+            {guide.name}
           </Badge>
-          <h1 className="text-4xl font-bold mb-4">{data.title}</h1>
-          <p className="text-lg opacity-90 mb-6">{data.description}</p>
+          <h1 className="text-4xl font-bold mb-4">{phase.title}</h1>
+          <p className="text-lg opacity-90 mb-6">{phase.description}</p>
           
           <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
@@ -137,7 +64,7 @@ export default function PhaseDetail() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {data.objectives.map((objective, index) => (
+              {phase.objectives.map((objective, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                   <span className="text-foreground">{objective}</span>
@@ -152,7 +79,7 @@ export default function PhaseDetail() {
       <section className="container mx-auto px-6 pb-12">
         <h2 className="text-2xl font-bold text-foreground mb-6">Pasos de la Fase</h2>
         <div className="space-y-6">
-          {data.steps.map((step, index) => (
+          {phase.steps.map((step, index) => (
             <Card key={index} className="border-l-4 border-l-primary">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -200,7 +127,7 @@ export default function PhaseDetail() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {data.deliverables.map((deliverable, index) => (
+              {phase.deliverables.map((deliverable, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-alert mt-0.5 flex-shrink-0" />
                   <span className="text-foreground">{deliverable}</span>
@@ -214,18 +141,36 @@ export default function PhaseDetail() {
       {/* Navigation */}
       <section className="container mx-auto px-6 pb-16">
         <div className="flex items-center justify-between">
-          <Button variant="outline" asChild>
-            <Link to={data.prevPhase}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Fase Anterior
-            </Link>
-          </Button>
-          <Button className="bg-primary hover:bg-primary-hover" asChild>
-            <Link to={data.nextPhase}>
-              Siguiente Fase
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+          {prevPhase ? (
+            <Button variant="outline" asChild>
+              <Link to={`/${guideId}/${prevPhase.id}`}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Fase Anterior
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="outline" asChild>
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Inicio
+              </Link>
+            </Button>
+          )}
+          {nextPhase ? (
+            <Button className="bg-primary hover:bg-primary-hover" asChild>
+              <Link to={`/${guideId}/${nextPhase.id}`}>
+                Siguiente Fase
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          ) : (
+            <Button className="bg-success hover:bg-success/90" asChild>
+              <Link to="/">
+                Completar Guía
+                <CheckCircle2 className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
         </div>
       </section>
     </div>
