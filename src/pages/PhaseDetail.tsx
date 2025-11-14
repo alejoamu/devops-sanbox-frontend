@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Download, Play } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { getPhaseByIds, getGuideById } from "@/data/guidesData";
+import { PhaseProgress } from "@/components/PhaseProgress";
 
 export default function PhaseDetail() {
   const { guideId, phaseId } = useParams<{ guideId: string; phaseId: string }>();
@@ -28,8 +28,6 @@ export default function PhaseDetail() {
   const prevPhase = currentPhaseIndex > 0 ? guide.phases[currentPhaseIndex - 1] : null;
   const nextPhase = currentPhaseIndex < guide.phases.length - 1 ? guide.phases[currentPhaseIndex + 1] : null;
 
-  const progress = ((currentPhaseIndex + 1) / guide.phases.length) * 100;
-
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -45,12 +43,9 @@ export default function PhaseDetail() {
           <h1 className="text-4xl font-bold mb-4">{phase.title}</h1>
           <p className="text-lg opacity-90 mb-6">{phase.description}</p>
           
-          <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Progreso de la fase</span>
-              <span className="text-sm font-medium">{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
+          <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-6">
+            <h3 className="text-sm font-medium mb-4 text-center">Progreso del Proyecto</h3>
+            <PhaseProgress phases={guide.phases} currentPhaseId={phaseId || ""} />
           </div>
         </div>
       </section>
