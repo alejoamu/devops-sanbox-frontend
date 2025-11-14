@@ -45,7 +45,7 @@ export default function PhaseDetail() {
           
           <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-6">
             <h3 className="text-sm font-medium mb-4 text-center">Progreso del Proyecto</h3>
-            <PhaseProgress phases={guide.phases} currentPhaseId={phaseId || ""} />
+            <PhaseProgress phases={guide.phases} currentPhaseId={phaseId || ""} guideId={guideId || ""} />
           </div>
         </div>
       </section>

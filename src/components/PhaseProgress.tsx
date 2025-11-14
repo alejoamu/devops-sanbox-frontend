@@ -1,5 +1,6 @@
 import { ChevronRight, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 interface Phase {
   id: string;
@@ -9,9 +10,10 @@ interface Phase {
 interface PhaseProgressProps {
   phases: Phase[];
   currentPhaseId: string;
+  guideId: string;
 }
 
-export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
+export function PhaseProgress({ phases, currentPhaseId, guideId }: PhaseProgressProps) {
   const currentIndex = phases.findIndex((p) => p.id === currentPhaseId);
   
   // Colores vibrantes tipo neón para cada fase
@@ -35,12 +37,13 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
           return (
             <div key={phase.id} className="flex items-center gap-3">
               <div className="flex flex-col items-center gap-2">
-                <div
+                <Link
+                  to={`/${guideId}/${phase.id}`}
                   className={cn(
-                    "relative flex items-center justify-center rounded-full transition-all duration-300 border-2",
+                    "relative flex items-center justify-center rounded-full transition-all duration-300 border-2 cursor-pointer hover:scale-110",
                     isCompleted && "bg-success border-success shadow-lg shadow-success/20",
                     isActive && `${colors.bg} ${colors.border} shadow-lg ${colors.shadow} ring-4 ${colors.ring}`,
-                    !isActive && !isCompleted && "bg-muted border-border"
+                    !isActive && !isCompleted && "bg-muted border-border hover:border-primary/50"
                   )}
                   style={{
                     width: isActive ? "72px" : "64px",
@@ -61,13 +64,12 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
                       {index + 1}
                     </span>
                   )}
-                </div>
+                </Link>
                 <span
                   className={cn(
                     "text-xs text-center font-medium transition-colors max-w-[90px] line-clamp-2",
-                    isActive && `${colors.text} font-semibold`,
-                    isCompleted && "text-success",
-                    !isActive && !isCompleted && "text-muted-foreground"
+                    isActive && "text-white font-semibold",
+                    !isActive && "text-muted-foreground"
                   )}
                 >
                   {phase.title}
