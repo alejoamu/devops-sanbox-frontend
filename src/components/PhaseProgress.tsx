@@ -13,6 +13,16 @@ interface PhaseProgressProps {
 
 export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
   const currentIndex = phases.findIndex((p) => p.id === currentPhaseId);
+  
+  // Colores vibrantes tipo neón para cada fase
+  const phaseColors = [
+    { bg: "bg-primary", border: "border-primary", shadow: "shadow-primary/30", ring: "ring-primary/20", text: "text-primary" }, // Azul
+    { bg: "bg-success", border: "border-success", shadow: "shadow-success/30", ring: "ring-success/20", text: "text-success" }, // Verde
+    { bg: "bg-alert", border: "border-alert", shadow: "shadow-alert/30", ring: "ring-alert/20", text: "text-alert" }, // Naranja
+    { bg: "bg-secondary", border: "border-secondary", shadow: "shadow-secondary/30", ring: "ring-secondary/20", text: "text-secondary" }, // Morado
+    { bg: "bg-accent-yellow", border: "border-accent-yellow", shadow: "shadow-accent-yellow/30", ring: "ring-accent-yellow/20", text: "text-accent-yellow" }, // Amarillo
+    { bg: "bg-primary", border: "border-primary", shadow: "shadow-primary/30", ring: "ring-primary/20", text: "text-primary" }, // Azul (ciclo)
+  ];
 
   return (
     <div className="w-full overflow-x-auto">
@@ -20,6 +30,7 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
         {phases.map((phase, index) => {
           const isActive = index === currentIndex;
           const isCompleted = index < currentIndex;
+          const colors = phaseColors[index % phaseColors.length];
           
           return (
             <div key={phase.id} className="flex items-center gap-3">
@@ -27,8 +38,8 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
                 <div
                   className={cn(
                     "relative flex items-center justify-center rounded-full transition-all duration-300 border-2",
-                    isCompleted && "bg-success border-success shadow-lg shadow-success/20 animate-scale-in",
-                    isActive && "bg-primary border-primary shadow-lg shadow-primary/30 ring-4 ring-primary/20 animate-pulse",
+                    isCompleted && "bg-success border-success shadow-lg shadow-success/20",
+                    isActive && `${colors.bg} ${colors.border} shadow-lg ${colors.shadow} ring-4 ${colors.ring}`,
                     !isActive && !isCompleted && "bg-muted border-border"
                   )}
                   style={{
@@ -42,7 +53,7 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
                     <span
                       className={cn(
                         "text-sm font-bold transition-colors",
-                        isActive && "text-primary-foreground",
+                        isActive && "text-white",
                         isCompleted && "text-success-foreground",
                         !isActive && !isCompleted && "text-muted-foreground"
                       )}
@@ -54,7 +65,7 @@ export function PhaseProgress({ phases, currentPhaseId }: PhaseProgressProps) {
                 <span
                   className={cn(
                     "text-xs text-center font-medium transition-colors max-w-[90px] line-clamp-2",
-                    isActive && "text-primary font-semibold",
+                    isActive && `${colors.text} font-semibold`,
                     isCompleted && "text-success",
                     !isActive && !isCompleted && "text-muted-foreground"
                   )}
