@@ -2,66 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Download, Play, FileText, Image as ImageIcon } from "lucide-react";
-
-const resources = [
-  {
-    title: "Plantilla de Propuesta de Investigación",
-    type: "document",
-    category: "PDG1",
-    description: "Formato estándar para la presentación de tu propuesta inicial.",
-    format: "DOCX",
-  },
-  {
-    title: "Guía de Redacción Académica",
-    type: "document",
-    category: "General",
-    description: "Normas y mejores prácticas para la escritura académica.",
-    format: "PDF",
-  },
-  {
-    title: "Tutorial: Búsqueda en Bases de Datos",
-    type: "video",
-    category: "PDG1",
-    description: "Aprende a buscar literatura académica de manera efectiva.",
-    duration: "15:30",
-  },
-  {
-    title: "Ejemplo de Marco Teórico",
-    type: "document",
-    category: "PDG1",
-    description: "Ejemplo completo de un marco teórico bien estructurado.",
-    format: "PDF",
-  },
-  {
-    title: "Plantilla de Matriz Metodológica",
-    type: "document",
-    category: "PDG1",
-    description: "Herramienta para organizar tu diseño metodológico.",
-    format: "XLSX",
-  },
-  {
-    title: "Diagramas y Modelos Conceptuales",
-    type: "image",
-    category: "General",
-    description: "Ejemplos de diagramas para representar conceptos e ideas.",
-    format: "PNG",
-  },
-  {
-    title: "Tutorial: Análisis de Datos Cualitativos",
-    type: "video",
-    category: "PDG2",
-    description: "Técnicas para analizar datos cualitativos en tu investigación.",
-    duration: "22:15",
-  },
-  {
-    title: "Formato de Presentación Final",
-    type: "document",
-    category: "PDG2",
-    description: "Plantilla para la presentación de tu proyecto de grado.",
-    format: "PPTX",
-  },
-];
+import { Search, Download, Play, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
+import { useResources } from "@/hooks/useResources";
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -86,12 +28,40 @@ const getCategoryColor = (category: string) => {
 };
 
 export default function Resources() {
+  const { data: resources, isLoading, error } = useResources();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Error al cargar los recursos</CardTitle>
+            <CardDescription>
+              No se pudo conectar con el servidor. Por favor, verifica que el backend esté ejecutándose.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.reload()}>Reintentar</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Header */}
       <section className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
         <div className="container mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold mb-4">Recursos de Apoyo</h1>
+          <h1 className="text-4xl font-bold mb-4">Recursos de Apoyooooo</h1>
           <p className="text-lg opacity-90">
             Accede a plantillas, ejemplos, videos tutoriales y material de referencia para tu proyecto de grado.
           </p>
@@ -130,7 +100,7 @@ export default function Resources() {
       {/* Resources Grid */}
       <section className="container mx-auto px-6 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map((resource, index) => (
+          {resources?.map((resource, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between mb-2">

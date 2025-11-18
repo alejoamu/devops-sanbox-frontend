@@ -1,25 +1,42 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Download, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Download, Play, Loader2 } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { getPhaseByIds, getGuideById } from "@/data/guidesData";
+import { usePhase, useGuide } from "@/hooks/useGuides";
 import { PhaseProgress } from "@/components/PhaseProgress";
 
 export default function PhaseDetail() {
   const { guideId, phaseId } = useParams<{ guideId: string; phaseId: string }>();
   const navigate = useNavigate();
   
-  const guide = getGuideById(guideId || "");
-  const phase = getPhaseByIds(guideId || "", phaseId || "");
+  const { data: phase, isLoading: isLoadingPhase, error: phaseError } = usePhase(guideId || "", phaseId || "");
+  const { data: guide, isLoading: isLoadingGuide } = useGuide(guideId || "");
 
-  if (!guide || !phase) {
+  if (isLoadingPhase || isLoadingGuide) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (phaseError || !phase || !guide) {
     return (
       <div className="container mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold">Fase no encontrada</h1>
-        <Button className="mt-4" onClick={() => navigate("/")}>
-          Volver al inicio
-        </Button>
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Fase no encontrada</CardTitle>
+            <CardDescription>
+              No se pudo cargar la fase solicitada. Verifica que el backend esté ejecutándose.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/")}>
+              Volver al inicio
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

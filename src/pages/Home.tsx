@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { PhaseCard } from "@/components/PhaseCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, BookOpen, FileText, Star, Brain, Cpu } from "lucide-react";
+import { Search, BookOpen, FileText, Star, Brain, Cpu, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { guides } from "@/data/guidesData";
+import { useGuides } from "@/hooks/useGuides";
 
 const getGuideIcon = (iconName: string) => {
   switch (iconName) {
@@ -23,6 +23,34 @@ const featuredResources = [
 ];
 
 export default function Home() {
+  const { data: guides, isLoading, error } = useGuides();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Error al cargar las guías</CardTitle>
+            <CardDescription>
+              No se pudo conectar con el servidor. Por favor, verifica que el backend esté ejecutándose.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.reload()}>Reintentar</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -38,7 +66,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" className="bg-primary hover:bg-primary-hover" asChild>
-                <Link to={`/${guides[0]?.id}/${guides[0]?.phases[0]?.id}`}>Explorar Guías</Link>
+                <Link to={`/${guides?.[0]?.id}/${guides?.[0]?.phases?.[0]?.id || ''}`}>Explorar Guías</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/resources">
@@ -77,7 +105,7 @@ export default function Home() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {guides.map((guide) => {
+          {guides?.map((guide) => {
             const GuideIcon = getGuideIcon(guide.icon);
             return (
               <Card key={guide.id} className="hover:shadow-lg transition-shadow border-border">
@@ -111,7 +139,7 @@ export default function Home() {
       </section>
 
       {/* All Phases Preview */}
-      {guides.map((guide, guideIndex) => (
+      {guides?.map((guide, guideIndex) => (
         <section 
           key={guide.id} 
           className={`container mx-auto px-6 py-16 ${guideIndex % 2 === 1 ? 'bg-muted/30' : ''}`}

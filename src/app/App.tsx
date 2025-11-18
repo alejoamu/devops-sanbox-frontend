@@ -5,11 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import Home from "./pages/Home";
-import PhaseDetail from "./pages/PhaseDetail";
-import Resources from "./pages/Resources";
-import FAQ from "./pages/FAQ";
-import NotFound from "./pages/NotFound";
+import Home from "@/pages/Home";
+import PhaseDetail from "@/pages/PhaseDetail";
+import Resources from "@/pages/Resources";
+import FAQ from "@/pages/FAQ";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -43,3 +43,4 @@ const App = () => (
 );
 
 export default App;
+

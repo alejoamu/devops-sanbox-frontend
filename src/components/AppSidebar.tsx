@@ -1,6 +1,6 @@
-import { Home, FileText, HelpCircle, Search, GraduationCap, Brain, Cpu, ChevronDown } from "lucide-react";
+import { Home, FileText, HelpCircle, GraduationCap, Brain, Cpu, ChevronDown } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { guides } from "@/data/guidesData";
+import { useGuides } from "@/hooks/useGuides";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +19,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 
 const navigation = [
   { title: "Inicio", url: "/", icon: Home },
-  { title: "Buscar", url: "/search", icon: Search },
 ];
 
 const resources = [
@@ -39,6 +38,8 @@ const getGuideIcon = (iconName: string) => {
 };
 
 export function AppSidebar() {
+  const { data: guides = [] } = useGuides();
+  
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-4">

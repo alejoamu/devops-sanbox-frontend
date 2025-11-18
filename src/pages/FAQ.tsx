@@ -2,52 +2,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Mail } from "lucide-react";
-
-const faqs = [
-  {
-    question: "¿Cuál es la diferencia entre PDG1 y PDG2?",
-    answer: "PDG1 se enfoca en la planificación y diseño de la investigación (definición del problema, marco teórico y metodología), mientras que PDG2 se centra en la ejecución, análisis de resultados y conclusiones del proyecto.",
-  },
-  {
-    question: "¿Cuánto tiempo tengo para completar cada fase?",
-    answer: "El tiempo varía según la fase, pero generalmente cada una toma entre 2 y 6 semanas. Consulta la descripción específica de cada fase para tiempos estimados.",
-  },
-  {
-    question: "¿Puedo cambiar mi tema de investigación después de PDG1?",
-    answer: "Los cambios mayores deben ser consultados con tu director de proyecto. Cambios menores de enfoque son posibles con justificación adecuada.",
-  },
-  {
-    question: "¿Dónde puedo encontrar ejemplos de proyectos anteriores?",
-    answer: "La sección de Recursos contiene ejemplos de proyectos exitosos. También puedes consultar el repositorio institucional de la biblioteca.",
-  },
-  {
-    question: "¿Qué formato de citación debo usar?",
-    answer: "La Universidad Icesi requiere el formato APA (última edición) para todas las citaciones y referencias bibliográficas.",
-  },
-  {
-    question: "¿Cómo selecciono mi director de proyecto?",
-    answer: "Debes elegir un profesor del programa que tenga experiencia en tu área de interés. Contacta directamente al profesor y solicita una reunión para discutir tu propuesta.",
-  },
-  {
-    question: "¿Puedo trabajar en grupo para el proyecto de grado?",
-    answer: "Depende del programa. Algunos permiten proyectos en pareja o grupos pequeños. Consulta con la coordinación de tu programa.",
-  },
-  {
-    question: "¿Qué hago si no apruebo una fase?",
-    answer: "Debes revisar los comentarios de tu evaluador, hacer las correcciones necesarias y volver a presentar según el calendario académico.",
-  },
-  {
-    question: "¿Cómo accedo a las bases de datos para mi investigación?",
-    answer: "Puedes acceder a través de la biblioteca virtual de la Universidad Icesi con tu usuario institucional. Consulta la sección de Recursos para más información.",
-  },
-  {
-    question: "¿Necesito aprobación ética para mi proyecto?",
-    answer: "Si tu investigación involucra seres humanos, datos personales o experimentación, debes solicitar aprobación del comité de ética antes de iniciar la recolección de datos.",
-  },
-];
+import { Search, Mail, Loader2 } from "lucide-react";
+import { useFaq } from "@/hooks/useFaq";
 
 export default function FAQ() {
+  const { data: faqs, isLoading, error } = useFaq();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Error al cargar las preguntas frecuentes</CardTitle>
+            <CardDescription>
+              No se pudo conectar con el servidor. Por favor, verifica que el backend esté ejecutándose.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.reload()}>Reintentar</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -86,7 +71,7 @@ export default function FAQ() {
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq, index) => (
+              {faqs?.map((faq, index) => (
                 <AccordionItem key={index} value={`item-${index}`}>
                   <AccordionTrigger className="text-left">
                     {faq.question}
