@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
       host: "localhost",
     },
     proxy: {
-      "/api/v1": {
+      "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,
@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 5173,
     proxy: {
-      "/api/v1": {
+      "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,
