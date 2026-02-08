@@ -11,6 +11,9 @@ const getIcon = (type: string) => {
       return <Play className="h-5 w-5" />;
     case "image":
       return <ImageIcon className="h-5 w-5" />;
+    case "article":
+    case "book":
+    case "tool":
     default:
       return <FileText className="h-5 w-5" />;
   }
@@ -26,6 +29,15 @@ const getCategoryColor = (category: string) => {
       return "bg-muted text-muted-foreground";
   }
 };
+
+function parseMetadata(metadata: string | null | undefined): { duration?: string; format?: string } {
+  if (!metadata) return {};
+  try {
+    return JSON.parse(metadata) || {};
+  } catch {
+    return {};
+  }
+}
 
 export default function Resources() {
   const { data: resources, isLoading, error } = useResources();
@@ -61,7 +73,7 @@ export default function Resources() {
       {/* Header */}
       <section className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
         <div className="container mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold mb-4">Recursos de Apoyooooo</h1>
+          <h1 className="text-4xl font-bold mb-4">Recursos de Apoyo</h1>
           <p className="text-lg opacity-90">
             Accede a plantillas, ejemplos, videos tutoriales y material de referencia para tu proyecto de grado.
           </p>
@@ -100,42 +112,50 @@ export default function Resources() {
       {/* Resources Grid */}
       <section className="container mx-auto px-6 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources?.map((resource, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                    {getIcon(resource.type)}
+          {resources?.map((resource) => {
+            const meta = parseMetadata(resource.metadata);
+            const category = resource.provider || "General";
+            return (
+              <Card key={resource.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                      {getIcon(resource.type)}
+                    </div>
+                    <Badge variant="outline" className={getCategoryColor(category)}>
+                      {category}
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className={getCategoryColor(resource.category)}>
-                    {resource.category}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg">{resource.title}</CardTitle>
-                <CardDescription>{resource.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    {resource.format || resource.duration}
-                  </span>
-                  <Button size="sm" variant="ghost" className="text-primary">
-                    {resource.type === "video" ? (
-                      <>
-                        <Play className="mr-2 h-4 w-4" />
-                        Ver
-                      </>
-                    ) : (
-                      <>
-                        <Download className="mr-2 h-4 w-4" />
-                        Descargar
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <CardTitle className="text-lg">{resource.title}</CardTitle>
+                  <CardDescription>{resource.description || "Sin descripción"}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      {meta.format || meta.duration || ""}
+                    </span>
+                    {resource.url ? (
+                      <Button size="sm" variant="ghost" className="text-primary" asChild>
+                        <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                          {resource.type === "video" ? (
+                            <>
+                              <Play className="mr-2 h-4 w-4" />
+                              Ver
+                            </>
+                          ) : (
+                            <>
+                              <Download className="mr-2 h-4 w-4" />
+                              Descargar
+                            </>
+                          )}
+                        </a>
+                      </Button>
+                    ) : null}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
     </div>

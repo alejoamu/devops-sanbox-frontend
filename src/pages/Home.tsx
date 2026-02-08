@@ -66,7 +66,11 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" className="bg-primary hover:bg-primary-hover" asChild>
-                <Link to={`/${guides?.[0]?.id}/${guides?.[0]?.phases?.[0]?.id || ''}`}>Explorar Guías</Link>
+                <Link to={guides?.length && guides[0]?.phases?.length 
+                  ? `/${guides[0].id}/${guides[0].phases[0].id}` 
+                  : "/resources"}>
+                  Explorar Guías
+                </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/resources">
@@ -123,13 +127,17 @@ export default function Home() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{guide.phases.length} fases completas</span>
+                      <span>{guide.phases?.length ?? 0} fases completas</span>
                     </div>
-                    <Button className="w-full bg-primary hover:bg-primary-hover" asChild>
-                      <Link to={`/${guide.id}/${guide.phases[0].id}`}>
-                        Comenzar Guía
-                      </Link>
-                    </Button>
+                    {guide.phases?.length ? (
+                      <Button className="w-full bg-primary hover:bg-primary-hover" asChild>
+                        <Link to={`/${guide.id}/${guide.phases[0].id}`}>
+                          Comenzar Guía
+                        </Link>
+                      </Button>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Sin fases disponibles</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

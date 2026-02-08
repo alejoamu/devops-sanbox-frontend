@@ -71,16 +71,22 @@ export default function FAQ() {
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible className="w-full">
-              {faqs?.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="text-left">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              {(faqs?.length ?? 0) > 0 ? (
+                faqs!.map((faq, index) => (
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger className="text-left">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              ) : (
+                <p className="text-muted-foreground py-4">
+                  No hay preguntas frecuentes disponibles. Contacta al equipo de soporte para más información.
+                </p>
+              )}
             </Accordion>
           </CardContent>
         </Card>

@@ -3,17 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, Download, Play, Loader2 } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { usePhase, useGuide } from "@/hooks/useGuides";
+import { usePhase } from "@/hooks/useGuides";
 import { PhaseProgress } from "@/components/PhaseProgress";
 
 export default function PhaseDetail() {
   const { guideId, phaseId } = useParams<{ guideId: string; phaseId: string }>();
   const navigate = useNavigate();
   
-  const { data: phase, isLoading: isLoadingPhase, error: phaseError } = usePhase(guideId || "", phaseId || "");
-  const { data: guide, isLoading: isLoadingGuide } = useGuide(guideId || "");
+  const { data: phaseData, isLoading, error: phaseError } = usePhase(guideId || "", phaseId || "");
+  const phase = phaseData?.phase;
+  const guide = phaseData?.guide;
 
-  if (isLoadingPhase || isLoadingGuide) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -67,31 +68,33 @@ export default function PhaseDetail() {
         </div>
       </section>
 
-      {/* Objectives */}
-      <section className="container mx-auto px-6 py-12">
-        <Card>
-          <CardHeader>
-            <CardTitle>Objetivos de la Fase</CardTitle>
-            <CardDescription>Al completar esta fase, habrás logrado:</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {phase.objectives.map((objective, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">{objective}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </section>
+      {/* Objectives - solo si hay objetivos */}
+      {(phase.objectives?.length ?? 0) > 0 && (
+        <section className="container mx-auto px-6 py-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Objetivos de la Fase</CardTitle>
+              <CardDescription>Al completar esta fase, habrás logrado:</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {phase.objectives!.map((objective, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">{objective}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Steps */}
       <section className="container mx-auto px-6 pb-12">
         <h2 className="text-2xl font-bold text-foreground mb-6">Pasos de la Fase</h2>
         <div className="space-y-6">
-          {phase.steps.map((step, index) => (
+          {(phase.steps ?? []).map((step, index) => (
             <Card key={index} className="border-l-4 border-l-primary">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -103,7 +106,7 @@ export default function PhaseDetail() {
               <CardContent>
                 <h4 className="font-semibold text-foreground mb-3">Recursos disponibles:</h4>
                 <div className="space-y-2">
-                  {step.resources.map((resource, idx) => (
+                  {(step.resources ?? []).map((resource, idx) => (
                     <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                       <div className="flex items-center gap-3">
                         {resource.type === "video" ? (
@@ -118,9 +121,17 @@ export default function PhaseDetail() {
                           )}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        {resource.type === "video" ? "Ver" : "Descargar"}
-                      </Button>
+                      {resource.url ? (
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                            {resource.type === "video" ? "Ver" : "Descargar"}
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button variant="ghost" size="sm" disabled>
+                          {resource.type === "video" ? "Ver" : "Descargar"}
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -130,25 +141,27 @@ export default function PhaseDetail() {
         </div>
       </section>
 
-      {/* Deliverables */}
-      <section className="container mx-auto px-6 pb-12">
-        <Card className="bg-accent-yellow/10 border-accent-yellow/20">
-          <CardHeader>
-            <CardTitle>Entregables de la Fase</CardTitle>
-            <CardDescription>Documentos y productos que debes completar:</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {phase.deliverables.map((deliverable, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-alert mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">{deliverable}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </section>
+      {/* Deliverables - solo si hay entregables */}
+      {(phase.deliverables?.length ?? 0) > 0 && (
+        <section className="container mx-auto px-6 pb-12">
+          <Card className="bg-accent-yellow/10 border-accent-yellow/20">
+            <CardHeader>
+              <CardTitle>Entregables de la Fase</CardTitle>
+              <CardDescription>Documentos y productos que debes completar:</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {phase.deliverables!.map((deliverable, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-alert mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">{deliverable}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Navigation */}
       <section className="container mx-auto px-6 pb-16">
