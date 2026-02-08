@@ -1,14 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/config/api';
+import { useQuery } from "@tanstack/react-query";
 
 /**
- * Hook para obtener todas las preguntas frecuentes
+ * El backend actual no tiene endpoint de FAQ.
+ * Retornamos array vacío para que la página funcione sin errores.
  */
 export function useFaq() {
   return useQuery({
-    queryKey: ['faqs'],
-    queryFn: () => apiClient.getFaqs(),
-    staleTime: 10 * 60 * 1000, // 10 minutos
+    queryKey: ["faqs"],
+    queryFn: async () => [] as { question: string; answer: string }[],
+    staleTime: 10 * 60 * 1000,
   });
 }
-

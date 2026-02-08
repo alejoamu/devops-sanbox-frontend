@@ -1,14 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/config/api';
+import { useQuery } from "@tanstack/react-query";
+import {
+  fetchGuides,
+  fetchGuide,
+  fetchPhase,
+} from "@/services/guidesService";
 
 /**
- * Hook para obtener todas las guías
+ * Hook para obtener todas las guías (methodologies + phases + subphases + resources)
  */
 export function useGuides() {
   return useQuery({
-    queryKey: ['guides'],
-    queryFn: () => apiClient.getGuides(),
-    staleTime: 5 * 60 * 1000, // 5 minutos
+    queryKey: ["guides"],
+    queryFn: fetchGuides,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -17,8 +21,8 @@ export function useGuides() {
  */
 export function useGuide(guideSlug: string) {
   return useQuery({
-    queryKey: ['guides', guideSlug],
-    queryFn: () => apiClient.getGuide(guideSlug),
+    queryKey: ["guides", guideSlug],
+    queryFn: () => fetchGuide(guideSlug),
     enabled: !!guideSlug,
     staleTime: 5 * 60 * 1000,
   });
@@ -27,12 +31,11 @@ export function useGuide(guideSlug: string) {
 /**
  * Hook para obtener una fase específica
  */
-export function usePhase(guideSlug: string, phaseSlug: string) {
+export function usePhase(guideSlug: string, phaseId: string) {
   return useQuery({
-    queryKey: ['guides', guideSlug, 'phases', phaseSlug],
-    queryFn: () => apiClient.getPhase(guideSlug, phaseSlug),
-    enabled: !!guideSlug && !!phaseSlug,
+    queryKey: ["guides", guideSlug, "phases", phaseId],
+    queryFn: () => fetchPhase(guideSlug, phaseId),
+    enabled: !!guideSlug && !!phaseId,
     staleTime: 5 * 60 * 1000,
   });
 }
-
